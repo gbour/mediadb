@@ -1,0 +1,60 @@
+
+db fields
+
+T resource
+	type: dir,file
+	name:
+	fullpath:
+	comment
+	
+	tags
+
+T tag
+	hash(id)
+	name
+
+ops:
+	mediadb-index
+	mediadb-search
+	mediadb-info
+
+	mediadb [info|search|index] opts
+
+=== TODO / IDEAS ===
+
+search:
+	- by tag
+	- by name
+
+	i.e
+		- action movies
+			$> tag: movie & action
+		- folk french music album 
+			$> tag:music & french & folk & file:  =~ /plop/
+
+		see what's done in weboob (conditions engine)
+
+index
+	. compute a hashsum per file => duplicates
+		- may takes time
+	. compute a hashsum per directory ( sum(filename1 + ',' + filename2 + ..) => fast detect of changes 
+		in directory
+
+	. reindex
+		- remove deleted files
+		- add new files
+		- add/remove tags
+	
+	. auto/built tags
+		- use file name/path. i.e films: use last directory as tag
+			films/
+				horror/
+					freddy.avi
+
+				'horror' used as tag
+
+		  see youtube-dl syntax:
+				%(path[-1])s : /foo/bar/films/horror => horror
+				%(ext)s      : freddy.avi => avi
+
+		- extract file metadatas
