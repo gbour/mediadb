@@ -40,14 +40,29 @@ def do_init():
 	db.commit()
 	db.close()
 
-def tpl_ext(ctx):
-	print(os.path.splitext(ctx['filename']))
-	ext = os.path.splitext(ctx['filename'])[1]
-	if ext != '':
-		ext = ext[1:]
+def tpl_ext(params):
+	def __tpl_ext(ctx):
+		print(os.path.splitext(ctx['filename']))
+		ext = os.path.splitext(ctx['filename'])[1]
+		if ext != '':
+			ext = ext[1:]
 
-	return ext
+		return ext
+		
+	return __tpl_ext
 
+def tpl_path(params):
+	index = None
+	if len(params) == 1:
+		index = int(params[0])
+
+	def __tpl_path(ctx):
+		if index is None:
+			return ctx['path']
+
+		return os.path.split(ctx['path'])[index]
+
+	return __tpl_path
 
 def do_index():
 	parser = argparse.ArgumentParser(description='')
@@ -72,14 +87,14 @@ def do_index():
 			nonlocal idx
 
 			try:
-				tpls.append(eval('tpl_' + m.group(1)))
+				tpls.append(eval('tpl_' + m.group(1))(m.groups()[1:]))
 			except NameError as e:
 				raise Exception("tag '{0}': invalid '{1}' template".format(tag, m.group(1)))
 			
 			idx += 1
 			return "{" + str(idx) + "}"
 
-		(tag, count) = re.subn("%\(([^)]*)\)s", template, tag.strip())
+		(tag, count) = re.subn("%\(([^)\]]*)(?:\[([^\]]*)\])?\)s", template, tag.strip())
 		if count == 0:
 			tags['static'].append(tag)
 		else:
