@@ -1,0 +1,28 @@
+#!/usr/bin/python3
+
+import re
+import sys
+import os
+import os.path
+import argparse
+import sqlite3
+
+import pprint
+from mediadb import mediadb as mdb
+
+def do_search():
+	pass
+
+def help(prog, plugs):
+    print("Usage: {0} action\n\navailable actions:".format(prog))
+    for name in plugs.keys():
+        print(" .", name)
+    print('')
+
+if __name__ == '__main__':
+    plugins = mdb.get_plugins()
+
+    if len(sys.argv) == 1 or sys.argv[1] not in plugins:
+        help(sys.argv[0], plugins); sys.exit(1)
+
+    plugins[sys.argv[1]]().do(sys.argv[2:])
